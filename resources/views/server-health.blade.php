@@ -95,12 +95,12 @@
             </div>
         </div>
 
-        <!-- Database Connection Monitoring Chart -->
+        <!-- Database Connection & Process Monitoring Chart -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0">Database Connections (Last {{ config('monitoring.chart_hours', 6) }} Hours)</h5>
+                        <h5 class="mb-0">Database Connections & Processes (Last {{ config('monitoring.chart_hours', 6) }} Hours)</h5>
                     </div>
                     <div class="card-body">
                         <canvas id="dbConnectionsChart" height="80"></canvas>
@@ -380,10 +380,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Database Connections Chart
+    // Database Connections & Processes Chart
     const dbCtx = document.getElementById('dbConnectionsChart').getContext('2d');
     
     const dbConnectionsData = metrics.map(m => m.db_connections || 0);
+    const dbProcessesData = metrics.map(m => m.db_processes || 0);
     
     new Chart(dbCtx, {
         type: 'line',
@@ -391,10 +392,19 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: labels,
             datasets: [
                 {
-                    label: 'Database Connections',
+                    label: 'Connections',
                     data: dbConnectionsData,
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Processes',
+                    data: dbProcessesData,
+                    borderColor: 'rgb(255, 159, 64)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.1)',
                     tension: 0.4,
                     fill: true,
                     borderWidth: 2
@@ -416,7 +426,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' connections';
+                            const label = context.dataset.label || '';
+                            return label + ': ' + context.parsed.y;
                         }
                     }
                 }
@@ -427,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ticks: {
                         stepSize: 1,
                         callback: function(value) {
-                            return Math.floor(value) + ' conn';
+                            return Math.floor(value);
                         }
                     }
                 },

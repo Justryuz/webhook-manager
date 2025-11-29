@@ -25,6 +25,7 @@ class SystemMonitorService
             'network_rx_bytes' => $this->getNetworkRxBytes(),
             'network_tx_bytes' => $this->getNetworkTxBytes(),
             'db_connections' => $this->getDbConnections(),
+            'db_processes' => $this->getDbProcesses(),
             'recorded_at' => now(),
         ];
     }
@@ -465,6 +466,37 @@ class SystemMonitorService
             }
         } catch (\Exception $e) {
             logger()->error('Failed to get DB connections: ' . $e->getMessage());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get database running processes count.
+     */
+    protected function getDbProcesses(): int
+    {
+        try {
+            // Get process count from Laravel's DB facade
+            $connection = \Illuminate\Support\Facades\DB::connection();
+            $driver = $connection->getDriverName();
+            
+            if ($driver === 'sqlite') {
+                // SQLite doesn't have multiple processes
+                return 0;
+            } elseif ($driver === 'mysql') {
+                // MySQL - count running processes/queries
+                $result = $connection->select('SHOW PROCESSLIST');
+                return count($result);
+            } elseif ($driver === 'pgsql') {
+                // PostgreSQL - count active backend processes
+                $result = $connection->select('SELECT count(*) as count FROM pg_stat_activity');
+                if (!empty($result)) {
+                    return (int) $result[0]->count;
+                }
+            }
+        } catch (\Exception $e) {
+            logger()->error('Failed to get DB processes: ' . $e->getMessage());
         }
 
         return 0;

@@ -19,6 +19,7 @@ class SystemMetric extends Model
         'network_rx_bytes',
         'network_tx_bytes',
         'db_connections',
+        'db_processes',
         'recorded_at',
     ];
 
@@ -35,6 +36,7 @@ class SystemMetric extends Model
         'network_rx_bytes' => 'integer',
         'network_tx_bytes' => 'integer',
         'db_connections' => 'integer',
+        'db_processes' => 'integer',
         'recorded_at' => 'datetime',
     ];
 
