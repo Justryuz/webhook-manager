@@ -169,6 +169,12 @@ pre {
     opacity: 1;
 }
 
+/* Chart Canvas - Default Desktop Height */
+canvas {
+    min-height: 400px;
+    height: 400px;
+}
+
 /* Mobile Navigation Toggle */
 .mobile-menu-toggle {
     display: none;
@@ -253,7 +259,8 @@ pre {
     
     /* Charts - proper height for tablets */
     canvas {
-        min-height: 200px;
+        min-height: 280px !important;
+        height: 280px !important;
     }
     
     /* Adjust page header for mobile */
