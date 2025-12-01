@@ -143,7 +143,6 @@ server {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:{$socketPath};
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        fastcgi_index index.php;
         fastcgi_buffers 16 16k;
         fastcgi_buffer_size 32k;
         include fastcgi_params;
