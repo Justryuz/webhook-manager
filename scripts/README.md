@@ -168,7 +168,7 @@ mysql_secure_installation
 ```
 
 Follow prompts:
-- Set root password
+- Set password policy and security options: (skip validation for easier setup)
 - Remove anonymous users: Yes
 - Disallow root login remotely: Yes
 - Remove test database: Yes
@@ -329,11 +329,16 @@ sudo systemctl reload nginx
 
 **16. Setup SSL certificate with Certbot**
 ```bash
+# Automatic SSL setup with HTTP to HTTPS redirect
+sudo certbot --nginx -d your-domain.com -d www.your-domain.com --non-interactive --agree-tos --email your@email.com --redirect
+```
+
+**Or interactive mode (will prompt for email and options):**
+```bash
 sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 ```
 
-Follow prompts and select:
-- Redirect HTTP to HTTPS: Yes (recommended)
+The certificate will auto-renew via cron. Check with: `sudo certbot renew --dry-run`
 
 ---
 
