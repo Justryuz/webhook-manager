@@ -96,27 +96,19 @@ mv composer.phar /usr/local/bin/composer
 chmod +x /usr/local/bin/composer
 print_success "Composer installed"
 
-# Install Node.js versions using NVM
-print_info "Installing NVM (Node Version Manager)..."
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-print_success "NVM installed"
+# Install Node.js from NodeSource repository
+print_info "Adding NodeSource repository for Node.js 20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+print_success "NodeSource repository added"
 
-print_info "Installing Node.js versions (16, 18, 20, 21)..."
-for version in 16 18 20 21; do
-    nvm install $version
-    print_success "Node.js $version installed"
-done
-
-# Set Node 20 as default
-nvm alias default 20
-print_success "Node.js 20 set as default"
+print_info "Installing Node.js 20..."
+apt-get install -y nodejs
+print_success "Node.js $(node -v) and npm $(npm -v) installed"
 
 # Install PM2 globally
 print_info "Installing PM2..."
 npm install -g pm2
-pm2 startup
+pm2 startup systemd
 print_success "PM2 installed"
 
 # Install Redis
@@ -137,6 +129,13 @@ print_success "MySQL installed and started"
 print_info "Installing Certbot..."
 apt-get install -y certbot python3-certbot-nginx
 print_success "Certbot installed"
+
+# Install Supervisor for process management
+print_info "Installing Supervisor..."
+apt-get install -y supervisor
+systemctl enable supervisor
+systemctl start supervisor
+print_success "Supervisor installed and started"
 
 # Create web directories
 print_info "Creating web directories..."
@@ -161,10 +160,11 @@ print_info "Installed components:"
 echo "  • Nginx"
 echo "  • PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4 with FPM"
 echo "  • Composer"
-echo "  • Node.js 16, 18, 20, 21 (via NVM)"
+echo "  • Node.js 20 with npm (system-wide)"
 echo "  • PM2"
 echo "  • Redis"
 echo "  • MySQL"
+echo "  • Supervisor"
 echo "  • Certbot"
 echo ""
 print_info "Next steps:"
